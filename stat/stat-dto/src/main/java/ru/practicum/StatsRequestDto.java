@@ -14,11 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 public class StatsRequestDto {
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    @DateTimeFormat(pattern = DATE_FORMAT)
     @NotNull(message = "Нужно указать дату и время начала интервала")
     LocalDateTime start;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = DATE_FORMAT)
     @NotNull(message = "Нужно указать дату и время конца интервала")
     LocalDateTime end;
 
