@@ -47,8 +47,10 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public void saveHit(EndpointHitDto endpointHitDto) {
+    public EndpointHitDto saveHit(EndpointHitDto endpointHitDto) {
         EndpointHit endpointHit = hitsMapper.mapDtoToEndpointHit(endpointHitDto);
         statServerRepository.saveHit(endpointHit);
+
+        return endpointHitDto;
     }
 }

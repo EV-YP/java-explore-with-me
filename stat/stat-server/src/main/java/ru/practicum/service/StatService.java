@@ -10,5 +10,5 @@ public interface StatService {
 
     List<ViewStatsDto> getStats(StatsRequestDto statsRequestDto);
 
-    void saveHit(EndpointHitDto endpointHitDto);
+    EndpointHitDto saveHit(EndpointHitDto endpointHitDto);
 }

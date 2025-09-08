@@ -2,6 +2,7 @@ package ru.practicum.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.StatsRequestDto;
@@ -22,7 +23,8 @@ public class StatController {
     }
 
     @PostMapping("/hit")
-    private void saveHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
-        statService.saveHit(endpointHitDto);
+    @ResponseStatus(HttpStatus.CREATED)
+    private EndpointHitDto saveHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
+        return statService.saveHit(endpointHitDto);
     }
 }
