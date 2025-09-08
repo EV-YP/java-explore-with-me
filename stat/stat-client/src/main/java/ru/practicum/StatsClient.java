@@ -34,8 +34,8 @@ public class StatsClient {
 
     public ResponseEntity<Object> createHit(HttpServletRequest request, String appName) {
         String uri = request.getRequestURI();
-        EndpointHitDto Dto = getEndpointHitDto(request, appName);
-        return post(serverUrl + "/hit", Dto);
+        EndpointHitDto dto = getEndpointHitDto(request, appName);
+        return post(serverUrl + "/hit", dto);
 
     }
 
