@@ -36,7 +36,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
         if (!events.isEmpty()) {
             throw new ConflictException("Category with id " + categoryId + " has connected events");
         }
-        
+
         repository.deleteById(categoryId);
     }
 
