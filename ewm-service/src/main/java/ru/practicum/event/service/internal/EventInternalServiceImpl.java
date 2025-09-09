@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.dto.*;
@@ -39,6 +40,7 @@ public class EventInternalServiceImpl implements EventInternalService {
     private final RequestMapper requestMapper;
 
     @Override
+    @Transactional
     public EventFullDto addEvent(Integer userId, NewEventDto event) {
         User user = checkUser(userId);
         Category category = checkCategory(event.getCategoryId());
@@ -52,6 +54,7 @@ public class EventInternalServiceImpl implements EventInternalService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto getEvent(Integer userId, Integer eventId) {
         Event event = checkEvent(eventId);
         int confirmedRequests = requestRepository.findRequestsByEventIdAndStatus(eventId, CONFIRMED).size();
@@ -59,6 +62,7 @@ public class EventInternalServiceImpl implements EventInternalService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEvent(Integer userId, Integer eventId, UpdateEventUserRequest event) {
         Event eventFound = checkEvent(eventId);
         User user = checkUser(userId);
@@ -92,6 +96,7 @@ public class EventInternalServiceImpl implements EventInternalService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RequestDto> getUserRequests(Integer userId, Integer eventId) {
         checkUser(userId);
         checkEvent(eventId);
@@ -102,6 +107,7 @@ public class EventInternalServiceImpl implements EventInternalService {
     }
 
     @Override
+    @Transactional
     public EventRequestStatusUpdateResult updateRequests(EventRequestStatusUpdateRequest request,
                                                          Integer userId, Integer eventId) {
         checkUser(userId);
@@ -143,6 +149,7 @@ public class EventInternalServiceImpl implements EventInternalService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getEvents(Integer userId, Integer from, Integer size) {
         checkUser(userId);
         Pageable pageable = PageRequest.of(from, size);
@@ -155,7 +162,7 @@ public class EventInternalServiceImpl implements EventInternalService {
     private void checkDates(LocalDateTime createdOn, LocalDateTime eventDate) {
         if (eventDate.isBefore(createdOn) ||
         eventDate.minusHours(2L).isBefore(createdOn)) {
-            throw new ValidationException("Event date should be 2 horse after creation  date");
+            throw new ValidationException("Event date should be at least 2 hours later than the creation date");
         }
     }
 

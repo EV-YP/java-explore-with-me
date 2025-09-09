@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.SearchEventsDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
@@ -24,10 +25,9 @@ import java.util.Objects;
 public class EventAdminServiceImpl implements EventAdminService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
-//    private final CategoryRepository categoryRepository;
-//    private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventFullDto> getEvents(SearchEventsDto dto) {
         if (dto.getRangeStart() != null && dto.getRangeEnd() != null) {
             if (dto.getRangeStart().isAfter(dto.getRangeEnd())) {
@@ -46,13 +46,14 @@ public class EventAdminServiceImpl implements EventAdminService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEvent(Integer eventId, UpdateEventAdminRequest request) {
         Event event = eventRepository.findEventById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
         if (request.getEventDate() != null) {
             if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new ConflictException("Event date should be 1 horse after creation date");
+                throw new ConflictException("Event date should be at least 1 hour later than the current time");
             }
         }
 

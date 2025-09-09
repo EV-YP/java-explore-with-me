@@ -2,6 +2,7 @@ package ru.practicum.compilation.service.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
@@ -24,6 +25,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     private final CompilationMapper compilationMapper;
 
     @Override
+    @Transactional
     public CompilationDto addCompilation(NewCompilationDto compilationDto) {
         Compilation compilation = compilationMapper.toCompilation(compilationDto);
 
@@ -36,11 +38,13 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     }
 
     @Override
+    @Transactional
     public void deleteCompilation(Integer compilationId) {
         compilationRepository.delete(checkCompilation(compilationId));
     }
 
     @Override
+    @Transactional
     public CompilationDto updateCompilation(Integer compilationId, UpdateCompilationRequest compilationDto) {
         Compilation compilation = checkCompilation(compilationId);
 

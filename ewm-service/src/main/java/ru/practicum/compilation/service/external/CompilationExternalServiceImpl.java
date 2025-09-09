@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.CompilationsListRequestParams;
 import ru.practicum.compilation.mapper.CompilationMapper;
@@ -33,6 +34,7 @@ public class CompilationExternalServiceImpl implements CompilationExternalServic
     private final StatsClient statsClient;
 
     @Override
+    @Transactional(readOnly = true)
     public CompilationDto getCompilation(Integer compilationId) {
         Compilation compilation = checkCompilation(compilationId);
         CompilationDto compilationDto = compilationMapper.toDto(compilation);
@@ -41,14 +43,14 @@ public class CompilationExternalServiceImpl implements CompilationExternalServic
 
         if ((events != null) && (!events.isEmpty())) {
             Map<Integer, Integer> views = getEvents(events);
-            compilationDto.getEvents().stream()
-                    .peek(eventShortDto -> eventShortDto.setViews(views.get(eventShortDto.getId())));
+            compilationDto.getEvents().forEach(eventShortDto -> eventShortDto.setViews(views.get(eventShortDto.getId())));
         }
 
         return compilationDto;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompilationDto> getCompilations(CompilationsListRequestParams params) {
         int page = (int) Math.floor((double) params.getFrom() / params.getSize());
         Pageable pageable = PageRequest.of(page, params.getSize());

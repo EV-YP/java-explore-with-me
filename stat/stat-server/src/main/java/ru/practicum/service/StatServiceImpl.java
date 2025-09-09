@@ -2,6 +2,7 @@ package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.StatsRequestDto;
 import ru.practicum.ViewStatsDto;
@@ -23,6 +24,7 @@ public class StatServiceImpl implements StatService {
     private final HitsMapper hitsMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ViewStatsDto> getStats(StatsRequestDto statsRequestDto) {
         if (statsRequestDto.getStart().isAfter(statsRequestDto.getEnd())) {
             throw new ValidationException("Дата начала не может быть позже даты окончания");
@@ -47,6 +49,7 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
+    @Transactional
     public EndpointHitDto saveHit(EndpointHitDto endpointHitDto) {
         EndpointHit endpointHit = hitsMapper.mapDtoToEndpointHit(endpointHitDto);
         statServerRepository.saveHit(endpointHit);

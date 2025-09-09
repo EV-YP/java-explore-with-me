@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventExternalParams;
 import ru.practicum.event.dto.EventShortDto;
@@ -32,6 +33,7 @@ public class EventExternalServiceImpl implements EventExternalService {
     private final StatsClient statsClient;
 
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto findEventById(Integer id, HttpServletRequest request) {
         Event event = eventRepository.findEventsByIdAndState(id, State.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("Event with id " + id + " not found"));
@@ -46,6 +48,7 @@ public class EventExternalServiceImpl implements EventExternalService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> findAllEvents(EventExternalParams params, HttpServletRequest request) {
         statsClient.createHit(request, "ewm-main-service");
 
@@ -70,6 +73,7 @@ public class EventExternalServiceImpl implements EventExternalService {
         Pageable pageable = PageRequest.of(params.getFrom(), params.getSize(), sort);
 
         List<EventShortDto> events = eventRepository.findAll(spec, pageable).getContent().stream()
+                .filter(event -> event.getState().equals(State.PUBLISHED))
                 .map(eventMapper::toEventShortDto)
                 .toList();
 

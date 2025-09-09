@@ -2,6 +2,7 @@ package ru.practicum.category.service.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
@@ -22,12 +23,14 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
     private final EventRepository eventRepository;
 
     @Override
+    @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategory) {
         Category category = categoryMapper.toCategory(newCategory);
         return categoryMapper.toCategoryDto(repository.save(category));
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Integer categoryId) {
         Category category = repository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category with id " + categoryId + " not found"));
@@ -41,6 +44,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
     }
 
     @Override
+    @Transactional
     public CategoryDto updateCategory(int id, CategoryDto newCategory) {
         Category category = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category with id " + id + " not found"));

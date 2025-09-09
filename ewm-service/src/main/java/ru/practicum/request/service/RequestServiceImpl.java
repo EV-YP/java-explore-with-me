@@ -2,6 +2,7 @@ package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
@@ -25,6 +26,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestMapper requestMapper;
 
     @Override
+    @Transactional
     public RequestDto addRequest(Integer userId, Integer eventId) {
         Request request = new Request();
 
@@ -62,6 +64,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public RequestDto cancelRequest(Integer userId, Integer requestId) {
         Request request = requestRepository.findRequestById(requestId)
                 .orElseThrow(() -> new NotFoundException("Request with id " + requestId + " not found"));
@@ -74,6 +77,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RequestDto> getRequests(Integer userId) {
         checkUser(userId);
         return requestRepository.findRequestsByRequesterId(userId).stream()

@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
@@ -22,11 +23,13 @@ public class UserAdminServiceImpl implements UserAdminService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public UserDto addUser(NewUserRequest newUser) {
         return userMapper.toUserDto(userRepository.save(userMapper.toUser(newUser)));
     }
 
     @Override
+    @Transactional
     public void deleteUserById(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
@@ -35,6 +38,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto getUserById(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
@@ -43,6 +47,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getUsers(UsersListRequest request) {
         int page = request.from() / request.size();
         Pageable pageable = PageRequest.of(page, request.size(), Sort.by("id").ascending());
