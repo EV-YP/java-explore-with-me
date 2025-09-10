@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 
@@ -24,6 +25,17 @@ public class CustomExceptionHandler {
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
         return new CustomExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), stackTrace);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CustomExceptionResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+        log.error("400 {}", e.getMessage(), e);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        String stackTrace = sw.toString();
+        return new CustomExceptionResponse(HttpStatus.BAD_REQUEST, e.getMessage(), stackTrace);
     }
 
     @ExceptionHandler(ValidationException.class)
